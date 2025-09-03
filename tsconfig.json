@@ -1,0 +1,15 @@
+{
+"compilerOptions": {
+"baseUrl": ".",
+"paths": {
+"obsidian": ["node_modules/obsidian/obsidian.d.ts"]
+},
+"target": "ES2020",
+"module": "ESNext",
+"moduleResolution": "Bundler",
+"esModuleInterop": true,
+"strict": true,
+"skipLibCheck": true
+},
+"include": ["src"]
+}

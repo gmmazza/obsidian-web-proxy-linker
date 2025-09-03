@@ -1,0 +1,11 @@
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+dist/
+.env
+# Mapas de fuente u otros artefactos si no los publicas
+*.map
+
+# VS Code
+.vscode/

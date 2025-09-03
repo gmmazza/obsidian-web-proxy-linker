@@ -1,0 +1,17 @@
+{
+  "name": "obsidian-web-proxy-linker",
+  "version": "1.2.0",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --outfile=main.js --minify --sourcemap --external:obsidian --format=cjs --platform=browser --target=es2018",
+    "dev": "esbuild src/main.ts --bundle --outfile=main.js --sourcemap --external:obsidian --format=cjs --platform=browser --target=es2018 --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.0",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "obsidian": "latest"
+  }
+}

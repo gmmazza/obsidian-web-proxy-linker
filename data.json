@@ -1,0 +1,9 @@
+{
+  "routeStyle": "query",
+  "addHeadingAnchor": true,
+  "vaultNameOverride": "",
+  "baseUrl": "http://127.0.0.1:27124",
+  "useIntegratedServer": true,
+  "serverPort": 27124,
+  "listenHost": "127.0.0.1"
+}
