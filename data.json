@@ -1,9 +1,26 @@
 {
-  "routeStyle": "query",
-  "addHeadingAnchor": true,
-  "vaultNameOverride": "",
-  "baseUrl": "http://127.0.0.1:27124",
-  "useIntegratedServer": true,
-  "serverPort": 27124,
-  "listenHost": "127.0.0.1"
+  "settings": {
+    "routeStyle": "query",
+    "addHeadingAnchor": true,
+    "vaultNameOverride": "",
+    "baseUrl": "http://127.0.0.1:27124",
+    "useIntegratedServer": true,
+    "serverPort": 27124,
+    "listenHost": "127.0.0.1",
+    "linkStrategy": "basename",
+    "useNoteUidCompat": false,
+    "noteUidPluginId": null,
+    "frontmatterUidKeys": [
+      "uid",
+      "note_uid",
+      "noteId",
+      "id"
+    ],
+    "frontmatterUidKeyPreferred": "uid",
+    "autoAssignUid": false,
+    "uidFormat": "uuid-v4",
+    "basenameOpenSearchOnDuplicates": false,
+    "basenamePreferQuickSwitcherPlus": true
+  },
+  "registry": {}
 }
