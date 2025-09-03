@@ -1,6 +1,6 @@
-import type { TFile } from "obsidian";
+import { TFile } from "obsidian";
 import type WebProxyLinkerPlugin from "./main";
-import { openSearchWithQuery, tryOpenQuickSwitcher } from "./search";
+import { openSearchWithQuery } from "./search";
 
 function getNodeRequire(): any {
   const w = window as any;
@@ -64,28 +64,36 @@ export class IntegratedServer {
         const u = url.searchParams.get("u") || "";
         const uid = url.searchParams.get("uid");
         const lid = url.searchParams.get("id");
-        const bn = url.searchParams.get("bn");
+        const bnParam = url.searchParams.get("bn") || undefined;
         const heading = url.searchParams.get("h") || undefined;
 
-        // 1) Resolve UID -> path
-        let targetPath: string | undefined;
+        const candidatePath = extractPathFromObsidianUrl(u);
+        const basename = bnParam || (candidatePath ? getBasename(candidatePath) : undefined);
+
+        // 1) UID / Local ID fast paths
+        let targetPath: string | undefined = undefined;
         if (uid) targetPath = indexer.getPathByUid(uid);
-        // 2) Resolve local id -> path
         if (!targetPath && lid) targetPath = indexer.getPathByLocalId(lid);
-        // 3) Resolve basename -> path (single match)
-        if (!targetPath && bn) {
-          const matches = app.vault.getFiles().filter((f: TFile) => f.basename === bn);
+
+        // 2) Duplicate handling by basename (if we have one)
+        if (!targetPath && basename) {
+          const matches = app.vault.getFiles().filter((f: TFile) => f.basename === basename);
+          if (matches.length > 1) { openSearchWithQuery(app, basename); res.statusCode = 200; res.end(this.htmlOk("Multiple files match; opened Search.")); return; }
           if (matches.length === 1) targetPath = matches[0].path;
-          else if (matches.length > 1) {
-            if (settings.basenamePreferQuickSwitcherPlus) {
-              if (!tryOpenQuickSwitcher(app)) openSearchWithQuery(app, bn);
-            } else {
-              openSearchWithQuery(app, bn);
-            }
-            res.statusCode = 200; res.end(this.htmlOk("Multiple files match; opened Search.")); return;
+        }
+
+        // 3) Prefer explicit candidatePath if it exists
+        if (!targetPath && candidatePath) {
+          const af = app.vault.getAbstractFileByPath(candidatePath);
+          if (af && af instanceof TFile) {
+            targetPath = candidatePath;
+          } else {
+            // If not found, but we have a basename, try to open Search with it
+            if (basename) { openSearchWithQuery(app, basename); res.statusCode = 200; res.end(this.htmlOk("File moved; opened Search.")); return; }
           }
         }
 
+        // 4) Open resolved targetPath
         if (targetPath) {
           const vault = encodeURIComponent(app.vault.getName());
           const encodedPath = encodeURIComponent(targetPath);
@@ -95,7 +103,7 @@ export class IntegratedServer {
           res.statusCode = 200; res.end(this.htmlOk()); return;
         }
 
-        // 4) Fallback to raw `u` obsidian url
+        // 5) Fallback: raw obsidian:// in u
         if (u && /^obsidian:\/\//i.test(decodeURIComponent(u))) {
           shell.openExternal(decodeURIComponent(u));
           res.statusCode = 200; res.end(this.htmlOk()); return;
@@ -108,26 +116,31 @@ export class IntegratedServer {
         // Support resolving via uid/id/bn even on pretty URLs, before falling back to the path.
         const uid = url.searchParams.get("uid");
         const lid = url.searchParams.get("id");
-        const bn = url.searchParams.get("bn");
+        const bnParam = url.searchParams.get("bn") || undefined;
         const heading = url.searchParams.get("h") || undefined;
 
-        // Try UID
-        let targetPath: string | undefined;
+        // Extract explicit path from pretty URL
+        const parts = url.pathname.split("/").slice(2);
+        const vaultPart = parts.shift() || ""; // unused; current vault wins
+        const filePath = parts.map((p) => decodeURIComponent(p)).join("/");
+        const basename = bnParam || getBasename(filePath);
+
+        let targetPath: string | undefined = undefined;
         if (uid) targetPath = indexer.getPathByUid(uid);
         if (!targetPath && lid) targetPath = indexer.getPathByLocalId(lid);
-        if (!targetPath && bn) {
-          const matches = app.vault.getFiles().filter((f: TFile) => f.basename === bn);
+
+        if (!targetPath && basename) {
+          const matches = app.vault.getFiles().filter((f: TFile) => f.basename === basename);
+          if (matches.length > 1) { openSearchWithQuery(app, basename); res.statusCode = 200; res.end(this.htmlOk("Multiple files match; opened Search.")); return; }
           if (matches.length === 1) targetPath = matches[0].path;
-          else if (matches.length > 1) {
-            if (settings.basenameOpenSearchOnDuplicates) {
-              if (settings.basenamePreferQuickSwitcherPlus) {
-                if (!tryOpenQuickSwitcher(app)) openSearchWithQuery(app, bn);
-              } else {
-                openSearchWithQuery(app, bn);
-              }
-              res.statusCode = 200; res.end(this.htmlOk("Multiple files match; opened Search.")); return;
-            }
-          }
+        }
+
+        // Prefer the explicit pretty path if it exists
+        if (!targetPath && filePath) {
+          const af = app.vault.getAbstractFileByPath(filePath);
+          if (af && af instanceof TFile) {
+            targetPath = filePath;
+          } else if (basename) { openSearchWithQuery(app, basename); res.statusCode = 200; res.end(this.htmlOk("File moved; opened Search.")); return; }
         }
 
         if (targetPath) {
@@ -139,15 +152,7 @@ export class IntegratedServer {
           res.statusCode = 200; res.end(this.htmlOk()); return;
         }
 
-        // Fallback to the explicit pretty path
-        const parts = url.pathname.split("/").slice(2);
-        const vaultPart = parts.shift() || "";
-        const filePath = parts.map((p) => decodeURIComponent(p)).join("/");
-        const vault = decodeURIComponent(vaultPart);
-        let obs = `obsidian://open?vault=${encodeURIComponent(vault)}&file=${encodeURIComponent(filePath)}`;
-        if (heading) obs += `#${encodeURIComponent(heading)}`;
-        shell.openExternal(obs);
-        res.statusCode = 200; res.end(this.htmlOk()); return;
+        res.statusCode = 404; res.end("Not found"); return;
       }
 
       res.statusCode = 404; res.end("Not found");
@@ -156,4 +161,23 @@ export class IntegratedServer {
       res.statusCode = 500; res.end("Internal error");
     }
   }
+}
+
+function extractPathFromObsidianUrl(u: string | undefined | null): string | undefined {
+  if (!u) return undefined;
+  let s: string;
+  try { s = decodeURIComponent(u); } catch { s = u; }
+  if (!/^obsidian:\/\//i.test(s)) return undefined;
+  try {
+    const url = new URL(s);
+    const fp = url.searchParams.get("file");
+    if (!fp) return undefined;
+    try { return decodeURIComponent(fp); } catch { return fp; }
+  } catch { return undefined; }
+}
+
+function getBasename(p: string): string {
+  const name = p.split("/").pop() || p;
+  const dot = name.lastIndexOf(".");
+  return dot > 0 ? name.slice(0, dot) : name;
 }

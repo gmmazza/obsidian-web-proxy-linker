@@ -80,7 +80,7 @@ export class ProxyLinkerSettingTab extends PluginSettingTab {
       .setDesc("Choose how links stay stable when files move")
       .addDropdown((d) => d
         .addOptions({
-          "path": "Path (current behavior)",
+          "path": "Path (smart fallback)",
           "frontmatter-uid": "Frontmatter UID",
           "local-registry": "Local registry (no file changes)",
           "basename": "Basename (search on duplicates)",
@@ -89,22 +89,7 @@ export class ProxyLinkerSettingTab extends PluginSettingTab {
         .onChange(async (v: any) => { this.plugin.settings.linkStrategy = v as LinkStrategy; await this.plugin.saveSettings(); })
       );
 
-    // Basename options
-    new Setting(containerEl)
-      .setName("On duplicates: open Search")
-      .setDesc("If multiple files share the same basename, open Search with the query")
-      .addToggle((t) => t
-        .setValue(this.plugin.settings.basenameOpenSearchOnDuplicates)
-        .onChange(async (v) => { this.plugin.settings.basenameOpenSearchOnDuplicates = v; await this.plugin.saveSettings(); })
-      );
-
-    new Setting(containerEl)
-      .setName("Prefer QuickSwitcher++ on duplicates")
-      .setDesc("If installed, try to open Quick Switcher++ instead of Search (query cannot be prefilled)")
-      .addToggle((t) => t
-        .setValue(this.plugin.settings.basenamePreferQuickSwitcherPlus)
-        .onChange(async (v) => { this.plugin.settings.basenamePreferQuickSwitcherPlus = v; await this.plugin.saveSettings(); })
-      );
+    // Basename: duplicates always open Search (no extra options)
 
     // Frontmatter UID options
     containerEl.createEl("h3", { text: "Frontmatter UID" });
@@ -152,4 +137,3 @@ export class ProxyLinkerSettingTab extends PluginSettingTab {
       );
   }
 }
-

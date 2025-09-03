@@ -30,9 +30,7 @@ export interface ProxyLinkerSettings {
   // Local registry strategy (ids stored locally in plugin data)
   // no extra settings needed for now; export/import will be provided via commands later
 
-  // Basename strategy
-  basenameOpenSearchOnDuplicates: boolean;
-  basenamePreferQuickSwitcherPlus: boolean;
+  // Basename strategy: no extra settings; duplicates always open Search
 }
 
 export interface PluginDataShapeV2 {
@@ -58,8 +56,6 @@ export const DEFAULT_SETTINGS: ProxyLinkerSettings = {
   autoAssignUid: false,
   uidFormat: "uuid-v4",
 
-  basenameOpenSearchOnDuplicates: true,
-  basenamePreferQuickSwitcherPlus: false,
 };
 
 export function sanitizeBase(base: string): string { return base.replace(/\/+$/, ""); }
@@ -76,4 +72,3 @@ export function getBaseUrl(settings: ProxyLinkerSettings): string {
     return sanitizeBase(settings.baseUrl || "http://127.0.0.1:27124");
   }
 }
-

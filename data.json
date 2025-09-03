@@ -1,13 +1,13 @@
 {
   "settings": {
-    "routeStyle": "query",
+    "routeStyle": "pretty",
     "addHeadingAnchor": true,
     "vaultNameOverride": "",
     "baseUrl": "http://127.0.0.1:27124",
     "useIntegratedServer": true,
     "serverPort": 27124,
     "listenHost": "127.0.0.1",
-    "linkStrategy": "basename",
+    "linkStrategy": "path",
     "useNoteUidCompat": false,
     "noteUidPluginId": null,
     "frontmatterUidKeys": [
@@ -19,7 +19,7 @@
     "frontmatterUidKeyPreferred": "uid",
     "autoAssignUid": false,
     "uidFormat": "uuid-v4",
-    "basenameOpenSearchOnDuplicates": false,
+    "basenameOpenSearchOnDuplicates": true,
     "basenamePreferQuickSwitcherPlus": true
   },
   "registry": {}
