@@ -33,14 +33,6 @@ export async function buildProxyUrl(app: App, settings: ProxyLinkerSettings, ind
         return `${base}/open?id=${encodeURIComponent(id)}&u=${encodeURIComponent(inner)}${hq}`;
       }
     }
-    case "basename": {
-      const bn = file.basename;
-      if (settings.routeStyle === "pretty") {
-        return `${base}/v/${encodeURIComponent(getVaultName(app, settings))}/${file.path.split("/").map(encodeURIComponent).join("/")}?bn=${encodeURIComponent(bn)}${hq}`;
-      } else {
-        return `${base}/open?bn=${encodeURIComponent(bn)}&u=${encodeURIComponent(inner)}${hq}`;
-      }
-    }
     case "path":
     default: {
       if (settings.routeStyle === "pretty") {

@@ -78,7 +78,7 @@ export class IntegratedServer {
         // 2) Duplicate handling by basename (if we have one)
         if (!targetPath && basename) {
           const matches = app.vault.getFiles().filter((f: TFile) => f.basename === basename);
-          if (matches.length > 1) { openSearchWithQuery(app, basename); res.statusCode = 200; res.end(this.htmlOk("Multiple files match; opened Search.")); return; }
+          if (matches.length > 1) { openSearchWithQuery(app, buildFileNameQuery(basename)); res.statusCode = 200; res.end(this.htmlOk("Multiple files match; opened Search.")); return; }
           if (matches.length === 1) targetPath = matches[0].path;
         }
 
@@ -89,7 +89,7 @@ export class IntegratedServer {
             targetPath = candidatePath;
           } else {
             // If not found, but we have a basename, try to open Search with it
-            if (basename) { openSearchWithQuery(app, basename); res.statusCode = 200; res.end(this.htmlOk("File moved; opened Search.")); return; }
+            if (basename) { openSearchWithQuery(app, buildFileNameQuery(basename)); res.statusCode = 200; res.end(this.htmlOk("File moved; opened Search.")); return; }
           }
         }
 
@@ -131,7 +131,7 @@ export class IntegratedServer {
 
         if (!targetPath && basename) {
           const matches = app.vault.getFiles().filter((f: TFile) => f.basename === basename);
-          if (matches.length > 1) { openSearchWithQuery(app, basename); res.statusCode = 200; res.end(this.htmlOk("Multiple files match; opened Search.")); return; }
+          if (matches.length > 1) { openSearchWithQuery(app, buildFileNameQuery(basename)); res.statusCode = 200; res.end(this.htmlOk("Multiple files match; opened Search.")); return; }
           if (matches.length === 1) targetPath = matches[0].path;
         }
 
@@ -140,7 +140,7 @@ export class IntegratedServer {
           const af = app.vault.getAbstractFileByPath(filePath);
           if (af && af instanceof TFile) {
             targetPath = filePath;
-          } else if (basename) { openSearchWithQuery(app, basename); res.statusCode = 200; res.end(this.htmlOk("File moved; opened Search.")); return; }
+          } else if (basename) { openSearchWithQuery(app, buildFileNameQuery(basename)); res.statusCode = 200; res.end(this.htmlOk("File moved; opened Search.")); return; }
         }
 
         if (targetPath) {
@@ -180,4 +180,9 @@ function getBasename(p: string): string {
   const name = p.split("/").pop() || p;
   const dot = name.lastIndexOf(".");
   return dot > 0 ? name.slice(0, dot) : name;
+}
+
+function buildFileNameQuery(basename: string): string {
+  const q = basename.replace(/"/g, '\\"');
+  return `file:"${q}"`;
 }

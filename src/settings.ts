@@ -1,7 +1,7 @@
 import type { App } from "obsidian";
 
 export type RouteStyle = "query" | "pretty";
-export type LinkStrategy = "path" | "frontmatter-uid" | "local-registry" | "basename";
+export type LinkStrategy = "path" | "frontmatter-uid" | "local-registry";
 export type UidFormat = "uuid-v4" | "nanoid-21" | "timestamp-rand";
 
 export interface ProxyLinkerSettings {
@@ -30,7 +30,7 @@ export interface ProxyLinkerSettings {
   // Local registry strategy (ids stored locally in plugin data)
   // no extra settings needed for now; export/import will be provided via commands later
 
-  // Basename strategy: no extra settings; duplicates always open Search
+  // Basename strategy removed; Smart Path duplicate handling is built-in
 }
 
 export interface PluginDataShapeV2 {
