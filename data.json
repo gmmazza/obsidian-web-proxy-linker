@@ -7,7 +7,7 @@
     "useIntegratedServer": true,
     "serverPort": 27124,
     "listenHost": "127.0.0.1",
-    "linkStrategy": "path",
+    "linkStrategy": "frontmatter-uid",
     "useNoteUidCompat": false,
     "noteUidPluginId": null,
     "frontmatterUidKeys": [

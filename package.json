@@ -1,6 +1,6 @@
 {
   "name": "obsidian-web-proxy-linker",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
   "scripts": {
     "build": "esbuild src/main.ts --bundle --outfile=main.js --minify --sourcemap --external:obsidian --external:electron --external:@codemirror/state --external:@codemirror/view --format=cjs --platform=browser --target=es2018",
