@@ -55,10 +55,8 @@
 ## Quick Start
 
 * **Ribbon Button (“link”)**: Copies a web-proxy link for the current note.
-* **Command Palette**:
-
-  * `Copy web-proxy link of current note`
-  * `Insert web-proxy link into editor`
+* **Command Palette**: `Copy web-proxy link of current note`
+* **Note - More options**: `Copy web-proxy link`
 
 ---
 
