@@ -1,7 +1,7 @@
 {
   "id": "obsidian-web-proxy-linker",
   "name": "Web Proxy Linker (sandbox‑safe)",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "minAppVersion": "1.5.0",
   "description": "Genera enlaces http://127.0.0.1… y, si no estás en sandbox, ejecuta un proxy HTTP local integrado.",
   "author": "Tu Nombre",
