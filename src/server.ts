@@ -64,11 +64,10 @@ export class IntegratedServer {
         const u = url.searchParams.get("u") || "";
         const uid = url.searchParams.get("uid");
         const lid = url.searchParams.get("id");
-        const bnParam = url.searchParams.get("bn") || undefined;
         const heading = url.searchParams.get("h") || undefined;
 
         const candidatePath = extractPathFromObsidianUrl(u);
-        const basename = bnParam || (candidatePath ? getBasename(candidatePath) : undefined);
+        const basename = candidatePath ? getBasename(candidatePath) : undefined;
 
         // 1) UID / Local ID fast paths
         let targetPath: string | undefined = undefined;
@@ -113,17 +112,16 @@ export class IntegratedServer {
       }
 
       if (url.pathname.startsWith("/v/")) {
-        // Support resolving via uid/id/bn even on pretty URLs, before falling back to the path.
+        // Support resolving via uid/id even on pretty URLs, before falling back to the path.
         const uid = url.searchParams.get("uid");
         const lid = url.searchParams.get("id");
-        const bnParam = url.searchParams.get("bn") || undefined;
         const heading = url.searchParams.get("h") || undefined;
 
         // Extract explicit path from pretty URL
         const parts = url.pathname.split("/").slice(2);
         const vaultPart = parts.shift() || ""; // unused; current vault wins
         const filePath = parts.map((p) => decodeURIComponent(p)).join("/");
-        const basename = bnParam || getBasename(filePath);
+        const basename = getBasename(filePath);
 
         let targetPath: string | undefined = undefined;
         if (uid) targetPath = indexer.getPathByUid(uid);

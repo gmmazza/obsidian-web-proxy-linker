@@ -136,6 +136,10 @@ export default class WebProxyLinkerPlugin extends Plugin {
       this.settings = Object.assign({}, DEFAULT_SETTINGS, d.settings);
       this.registry = d.registry || {};
     }
+    // Sanitize: remove deprecated strategies (e.g., 'basename')
+    if (!['path','frontmatter-uid','local-registry'].includes((this.settings as any).linkStrategy)) {
+      this.settings.linkStrategy = 'path';
+    }
   }
 
   async saveSettings() {
@@ -145,4 +149,3 @@ export default class WebProxyLinkerPlugin extends Plugin {
     else { this.stopServer(); }
   }
 }
-
